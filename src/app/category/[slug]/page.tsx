@@ -1,4 +1,3 @@
-
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { client } from '@/sanity/lib/client';
@@ -10,7 +9,8 @@ interface CategoryType {
 }
 
 export async function generateStaticParams() {
-  const categories: CategoryType[] = await client.fetch(`*[_type == "category"]{slug}`);
+  // Fetch categories properly
+  const categories: CategoryType[] = await client.fetch('*[_type == "category"]{slug}');
   return categories.map((cat) => ({ slug: cat.slug.current }));
 }
 
@@ -22,20 +22,20 @@ interface ProductType {
   slug: string;
 }
 
-async function getProductsByCategory(slug: string) {
+async function getProductsByCategory(slug: string): Promise<ProductType[]> {
   const query = `*[_type == "product" && category->slug.current == $slug]{
     _id,
     name,
     price,
-    "imageUrl": image.asset->url, 
+    "imageUrl": image.asset->url,
     slug
   }`;
   const products: ProductType[] = await client.fetch(query, { slug });
-
   return products;
 }
 
 export default async function CategoryPage({ params }: { params: { slug: string } }) {
+  // Make CategoryPage async to fetch data properly
   const products = await getProductsByCategory(params.slug);
 
   if (!products.length) return notFound();
