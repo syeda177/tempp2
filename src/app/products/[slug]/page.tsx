@@ -1,13 +1,15 @@
 'use client';
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { useDispatch } from 'react-redux';
-import { addToCart } from '@/src/app/redux/cartSlice';
-import { client } from '@/src/sanity/lib/client';
+
+
 import { useWishlist } from '@/src/app/context/WishlistContext';
 import Link from 'next/link';
 import { Loader } from 'lucide-react';
+import clsx from 'clsx';
+import { addToCart } from '@/src/app/redux/cartSlice';
+import { client } from '@/sanity/lib/client';
 
 type Product = {
   _id: number;
@@ -67,24 +69,20 @@ const ProductListing = ({ params }: { params: { slug: string } }) => {
   const dispatch = useDispatch();
   const { addToWishlist } = useWishlist();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = await getData(params.slug);
-      if (data) {
-        setProduct(data.product);
-        setRelatedProducts(data.relatedProducts);
-      }
-    };
-    fetchData();
+  const fetchData = useCallback(async () => {
+    const data = await getData(params.slug);
+    if (data) {
+      setProduct(data.product);
+      setRelatedProducts(data.relatedProducts);
+    }
   }, [params.slug]);
 
-  if (!product) {
-    return <div className="flex justify-center items-center h-screen">
-      <Loader className="animate-spin text-[#2A254B]" size={48} />
-    </div>;
-  }
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const handleAddToCart = () => {
+    if (!product) return;
     dispatch(addToCart({
       id: product._id,
       name: product.name,
@@ -97,6 +95,7 @@ const ProductListing = ({ params }: { params: { slug: string } }) => {
   };
 
   const handleAddToWishlist = () => {
+    if (!product) return;
     addToWishlist({ ...product, _id: product._id.toString() });
     showPopup("Item added to wishlist!");
   };
@@ -105,6 +104,12 @@ const ProductListing = ({ params }: { params: { slug: string } }) => {
     setPopupMessage(message);
     setTimeout(() => setPopupMessage(null), 3000);
   };
+
+  if (!product) {
+    return <div className="flex justify-center items-center h-screen">
+      <Loader className="animate-spin text-[#2A254B]" size={48} />
+    </div>;
+  }
 
   return (
     <section className="px-6 md:px-12 py-10 bg-gray-50">
@@ -116,6 +121,7 @@ const ProductListing = ({ params }: { params: { slug: string } }) => {
             height={600}
             alt={product.name}
             className="w-full h-[540px] object-cover rounded-md hover:scale-105 transition-all"
+            priority
           />
         </div>
         <div className="w-full md:w-1/2 space-y-4">
@@ -123,7 +129,6 @@ const ProductListing = ({ params }: { params: { slug: string } }) => {
           <p className="text-xl text-gray-700">${product.price}</p>
           <p className="text-gray-600 leading-relaxed">{product.description}</p>
 
-          {/* ✅ Features Section */}
           {product.features && product.features.length > 0 && (
             <div className="mt-4 p-4 border border-gray-300 rounded-md">
               <h3 className="text-lg font-semibold mb-3">Key Features</h3>
@@ -138,21 +143,25 @@ const ProductListing = ({ params }: { params: { slug: string } }) => {
           <div className="p-4 border rounded-md">
             <h3 className="text-lg font-semibold mb-2">Product Dimensions</h3>
             <div className="text-gray-700">
-              <p>Width: {product.dimensions.width}</p>
-              <p>Height: {product.dimensions.height}</p>
-              <p>Depth: {product.dimensions.depth}</p>
+              <p>Width: {product.dimensions.width} </p>
+              <p>Height: {product.dimensions.height} </p>
+              <p>Depth: {product.dimensions.depth} </p>
             </div>
           </div>
 
           <div className="flex gap-4 mt-6">
             <button
-              className="px-6 py-3 bg-[#2A254B] text-white rounded-md hover:bg-[#1d1b38]"
+              className={clsx(
+                "px-6 py-3 bg-[#2A254B] text-white rounded-md hover:bg-[#1d1b38] focus:outline-none focus:ring-2 focus:ring-[#2A254B]",
+                { "opacity-50 cursor-not-allowed": !product }
+              )}
               onClick={handleAddToCart}
+              disabled={!product}
             >
               Add to Cart
             </button>
             <button
-              className="px-6 py-3 bg-red-500 text-white rounded-md hover:bg-red-600"
+              className="px-6 py-3 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
               onClick={handleAddToWishlist}
             >
               Wishlist ❤️
@@ -172,13 +181,14 @@ const ProductListing = ({ params }: { params: { slug: string } }) => {
           <h2 className="text-2xl font-semibold mb-4 text-gray-900">Related Products</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {relatedProducts.map((item) => (
-              <div key={item._id} className="bg-white  p-4 rounded-md shadow-md hover:shadow-lg transition-all">
+              <div key={item._id} className="bg-white p-4 rounded-md shadow-md hover:shadow-lg transition-all">
                 <Image
                   src={item.imageUrl}
                   width={200}
                   height={200}
                   alt={item.name}
                   className="w-full h-[200px] object-cover rounded-md hover:scale-105 transition-all"
+                  loading="lazy"
                 />
                 <h3 className="mt-2 text-lg font-medium">{item.name}</h3>
                 <p className="text-sm text-gray-600">${item.price}</p>

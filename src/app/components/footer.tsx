@@ -1,84 +1,111 @@
+'use client'
+import React, { useState } from 'react';
 import Link from 'next/link';
-import React from 'react';
-import { FaLinkedin, FaInstagram, FaFacebookSquare, FaTwitter, FaPinterest } from "react-icons/fa";
-import { IoLogoSkype } from "react-icons/io";
+import { FaLinkedin, FaInstagram, FaFacebookSquare, FaTwitter, FaPinterest } from 'react-icons/fa';
+import { IoLogoSkype } from 'react-icons/io';
 
 const Footer = () => {
+  const [email, setEmail] = useState('');
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value);
+
+  const handleEmailSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (email) {
+      // Handle email submission logic here
+      console.log('Email submitted:', email);
+    }
+  };
+
   return (
-    <>
-      <div className='px-6 md:px-12 py-12 bg-[#2A254B] mt-12'>
-        <div className="flex flex-wrap gap-12 md:gap-[100px] lg:gap-[200px]">
-          {/* Menu Section */}
-          <div className="text-white w-full sm:w-auto">
-            <h1 className="text-lg md:text-xl font-bold">Menu</h1>
-            <div className='space-y-2'>
-              <h1 className='pt-2'><Link href={'/'}>New Arrivals</Link></h1>
-              <h1><Link href={'/'}>Best sellers</Link></h1>
-              <h1><Link href={'/'}>Recently viewed</Link></h1>
-              <h1><Link href={'/'}>Popular this week</Link></h1>
-              <h1><Link href={'/'}>All Products</Link></h1>
-            </div>
-          </div>
-
-          {/* Categories Section */}
-          <div className="text-white w-full sm:w-auto">
-            <h1 className="text-lg md:text-xl font-bold">Categories</h1>
-            <div className='space-y-2'>
-              <h1 className='pt-2'><Link href={'/'}>Crockery</Link></h1>
-              <h1><Link href={'/'}>Furniture</Link></h1>
-              <h1><Link href={'/'}>Homeware</Link></h1>
-              <h1><Link href={'/'}>Plant pots</Link></h1>
-              <h1><Link href={'/'}>Chairs</Link></h1>
-            </div>
-          </div>
-
-          {/* Company Section */}
-          <div className="text-white w-full sm:w-auto">
-            <h1 className="text-lg md:text-xl font-bold">Our Company</h1>
-            <div className='space-y-2'>
-              <h1 className='pt-2'><Link href={'/about'}>About us</Link></h1>
-              <h1><Link href={'/'}>Vacancies</Link></h1>
-              <h1><Link href={'/contact'}>Contact us</Link></h1>
-              <h1><Link href={'/'}>Privacy</Link></h1>
-              <h1><Link href={'/'}>Return policy</Link></h1>
-            </div>
-          </div>
-
-          {/* Mailing List Section */}
-          <div className="text-white w-full sm:w-auto">
-            <h1 className="text-lg md:text-xl font-bold">Join our mailing list</h1>
-            <div className='mt-4'>
-              <input
-                type="text"
-                placeholder="your@email.com"
-                className='w-full sm:w-[250px] lg:w-[300px] h-[48px] p-2 bg-transparent opacity-35 border border-white rounded-md'
-              />
-              <button className='mt-2 sm:mt-0 sm:ml-2 w-full sm:w-[100px] h-[48px] bg-white text-[#2A254B] rounded-md'>
-                Sign up
-              </button>
-            </div>
-          </div>
+    <div className="px-6 md:px-12 py-12 bg-[#2A254B] mt-12">
+      <div className="flex flex-wrap gap-12 md:gap-[100px] lg:gap-[200px]">
+        {/* Menu Section */}
+        <div className="text-white w-full sm:w-auto">
+          <h2 className="text-lg md:text-xl font-bold">Menu</h2>
+          <ul className="space-y-2">
+            <li><Link href="/">New Arrivals</Link></li>
+            <li><Link href="/">Best Sellers</Link></li>
+            <li><Link href="/">Recently Viewed</Link></li>
+            <li><Link href="/">Popular this Week</Link></li>
+            <li><Link href="/">All Products</Link></li>
+          </ul>
         </div>
 
-        <hr className='bg-[#4E4D93] my-8' />
+        {/* Categories Section */}
+        <div className="text-white w-full sm:w-auto">
+          <h2 className="text-lg md:text-xl font-bold">Categories</h2>
+          <ul className="space-y-2">
+            <li><Link href="/">Crockery</Link></li>
+            <li><Link href="/">Furniture</Link></li>
+            <li><Link href="/">Homeware</Link></li>
+            <li><Link href="/">Plant Pots</Link></li>
+            <li><Link href="/">Chairs</Link></li>
+          </ul>
+        </div>
 
-        {/* Footer Bottom Section */}
-        <div className='flex flex-wrap justify-between items-center text-white gap-4'>
-          <div>
-            <h1>Copyright 2022 Avion LTD</h1>
-          </div>
-          <div className='flex gap-4'>
-            <Link href={'/'}><FaLinkedin size={20} /></Link>
-            <Link href={'/'}><FaFacebookSquare size={20} /></Link>
-            <Link href={'/'}><FaInstagram size={20} /></Link>
-            <Link href={'/'}><IoLogoSkype size={20} /></Link>
-            <Link href={'/'}><FaTwitter size={20} /></Link>
-            <Link href={'/'}><FaPinterest size={20} /></Link>
-          </div>
+        {/* Company Section */}
+        <div className="text-white w-full sm:w-auto">
+          <h2 className="text-lg md:text-xl font-bold">Our Company</h2>
+          <ul className="space-y-2">
+            <li><Link href="/about">About Us</Link></li>
+            <li><Link href="/">Vacancies</Link></li>
+            <li><Link href="/contact">Contact Us</Link></li>
+            <li><Link href="/">Privacy</Link></li>
+            <li><Link href="/">Return Policy</Link></li>
+          </ul>
+        </div>
+
+        {/* Mailing List Section */}
+        <div className="text-white w-full sm:w-auto">
+          <h2 className="text-lg md:text-xl font-bold">Join Our Mailing List</h2>
+          <form onSubmit={handleEmailSubmit} className="mt-4 flex flex-col sm:flex-row items-center justify-center">
+            <input
+              type="email"
+              value={email}
+              onChange={handleEmailChange}
+              placeholder="your@email.com"
+              className="w-full sm:w-[250px] lg:w-[300px] h-[48px] p-2 bg-transparent opacity-80 border border-white rounded-md"
+              aria-label="Email Address"
+              required
+            />
+            <button type="submit" className="mt-2 sm:mt-0 sm:ml-2 w-full sm:w-[100px] h-[48px] bg-white text-[#2A254B] rounded-md">
+              Sign Up
+            </button>
+          </form>
         </div>
       </div>
-    </>
+
+      <hr className="bg-[#4E4D93] my-8" />
+
+      {/* Footer Bottom Section */}
+      <div className="flex flex-wrap justify-between items-center text-white gap-4">
+        <div>
+          <p>© 2022 Avion LTD. All Rights Reserved.</p>
+        </div>
+        <div className="flex gap-4">
+          <Link href="/" aria-label="LinkedIn">
+            <FaLinkedin size={20} />
+          </Link>
+          <Link href="/" aria-label="Facebook">
+            <FaFacebookSquare size={20} />
+          </Link>
+          <Link href="/" aria-label="Instagram">
+            <FaInstagram size={20} />
+          </Link>
+          <Link href="/" aria-label="Skype">
+            <IoLogoSkype size={20} />
+          </Link>
+          <Link href="/" aria-label="Twitter">
+            <FaTwitter size={20} />
+          </Link>
+          <Link href="/" aria-label="Pinterest">
+            <FaPinterest size={20} />
+          </Link>
+        </div>
+      </div>
+    </div>
   );
 };
 
-export default Footer;
+export default React.memo(Footer);
