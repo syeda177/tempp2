@@ -34,8 +34,15 @@ async function getProductsByCategory(slug: string): Promise<ProductType[]> {
   return products;
 }
 
-export default async function CategoryPage({ params }: { params: { slug: string } }) {
-  // Make CategoryPage async to fetch data properly
+// Fix the type of props for the CategoryPage function
+interface CategoryPageProps {
+  params: {
+    slug: string;
+  };
+}
+
+export default async function CategoryPage({ params }: CategoryPageProps) {
+  // Fetch products by category
   const products = await getProductsByCategory(params.slug);
 
   if (!products.length) return notFound();
@@ -46,11 +53,11 @@ export default async function CategoryPage({ params }: { params: { slug: string 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-4">
         {products.map((product) => (
           <div key={product._id} className="border p-4 rounded-md shadow-md">
-            <Image 
-              src={product.imageUrl} 
-              alt={product.name} 
-              width={300} 
-              height={200} 
+            <Image
+              src={product.imageUrl}
+              alt={product.name}
+              width={300}
+              height={200}
               className="w-full h-48 object-cover"
             />
             <h2 className="text-lg font-semibold mt-2">{product.name}</h2>
