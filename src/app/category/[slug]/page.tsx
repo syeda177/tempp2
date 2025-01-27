@@ -41,8 +41,8 @@ interface CategoryPageProps {
   };
 }
 
+// The main CategoryPage function
 export default async function CategoryPage({ params }: CategoryPageProps) {
-  // Fetch products by category
   const products = await getProductsByCategory(params.slug);
 
   if (!products.length) return notFound();
