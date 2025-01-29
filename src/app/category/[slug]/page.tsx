@@ -2,18 +2,20 @@ import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { client } from '@/sanity/lib/client';
 
+// Category type
 interface CategoryType {
   slug: {
     current: string;
   };
 }
 
-export async function generateStaticParams() {
-  // Fetch categories properly
+// Generate static params for dynamic routes
+export async function generateStaticParams(): Promise<{ slug: string }[]> {
   const categories: CategoryType[] = await client.fetch('*[_type == "category"]{slug}');
   return categories.map((cat) => ({ slug: cat.slug.current }));
 }
 
+// Product type
 interface ProductType {
   _id: string;
   name: string;
@@ -22,6 +24,7 @@ interface ProductType {
   slug: string;
 }
 
+// Fetch products by category using slug
 async function getProductsByCategory(slug: string): Promise<ProductType[]> {
   const query = `*[_type == "product" && category->slug.current == $slug]{
     _id,
@@ -30,19 +33,20 @@ async function getProductsByCategory(slug: string): Promise<ProductType[]> {
     "imageUrl": image.asset->url,
     slug
   }`;
+
   const products: ProductType[] = await client.fetch(query, { slug });
   return products;
 }
 
-// Fix the type of props for the CategoryPage function
+// Define props interface
 interface CategoryPageProps {
-  params: {
-    slug: string;
-  };
+  params: { slug: string };
 }
 
-// The main CategoryPage function
+// Fix: Mark the function as async
 export default async function CategoryPage({ params }: CategoryPageProps) {
+  if (!params?.slug) return notFound();
+
   const products = await getProductsByCategory(params.slug);
 
   if (!products.length) return notFound();
