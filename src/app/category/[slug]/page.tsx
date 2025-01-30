@@ -9,12 +9,6 @@ interface CategoryType {
   };
 }
 
-// Generate static params for dynamic routes
-export async function generateStaticParams() {
-  const categories: CategoryType[] = await client.fetch('*[_type == "category"]{slug}');
-  return categories.map((cat) => ({ slug: cat.slug.current }));
-}
-
 // Product type
 interface ProductType {
   _id: string;
@@ -22,6 +16,12 @@ interface ProductType {
   price: number;
   imageUrl: string;
   slug: string;
+}
+
+// Generate static params for dynamic routes
+export async function generateStaticParams() {
+  const categories: CategoryType[] = await client.fetch('*[_type == "category"]{slug}');
+  return categories.map((cat) => ({ slug: cat.slug.current }));
 }
 
 // Fetch products by category using slug
@@ -38,13 +38,14 @@ async function getProductsByCategory(slug: string): Promise<ProductType[]> {
   return products;
 }
 
-// Define props interface
-interface CategoryPageProps {
+// Define the correct type for the page props
+type Props = {
   params: { slug: string };
+  searchParams: { [key: string]: string | string[] | undefined };
 }
 
 // Page component
-export default async function CategoryPage({ params }: CategoryPageProps) {
+export default async function CategoryPage({ params }: Props) {
   if (!params?.slug) return notFound();
 
   const products = await getProductsByCategory(params.slug);
