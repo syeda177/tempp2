@@ -1,25 +1,21 @@
-import { notFound } from "next/navigation";
-import Image from "next/image";
-import { client } from "@/sanity/lib/client";
+import { notFound } from 'next/navigation';
+import Image from 'next/image';
+import { client } from '@/sanity/lib/client';
 
-// Generate static params for dynamic routes
-type Params = { params: { slug: string } };
-
-// Define CategoryType
+// Category type
 interface CategoryType {
   slug: {
     current: string;
   };
 }
 
-export async function generateStaticParams(): Promise<{ slug: string }[]> {
-  const categories: CategoryType[] = await client.fetch(
-    `*[_type == "category"]{slug}`
-  );
+// Generate static params for dynamic routes
+export async function generateStaticParams() {
+  const categories: CategoryType[] = await client.fetch('*[_type == "category"]{slug}');
   return categories.map((cat) => ({ slug: cat.slug.current }));
 }
 
-// Define ProductType
+// Product type
 interface ProductType {
   _id: string;
   name: string;
@@ -29,33 +25,35 @@ interface ProductType {
 }
 
 // Fetch products by category using slug
-async function getProductsByCategory(slug: string) {
+async function getProductsByCategory(slug: string): Promise<ProductType[]> {
   const query = `*[_type == "product" && category->slug.current == $slug]{
     _id,
     name,
     price,
-    "imageUrl": image.asset->url, 
+    "imageUrl": image.asset->url,
     slug
   }`;
-  const products: ProductType[] = await client.fetch(query, { slug });
 
+  const products: ProductType[] = await client.fetch(query, { slug });
   return products;
 }
 
-// Define CategoryPage with typed params
-export default async function CategoryPage({
-  params,
-}: Params) {
+// Define props interface
+interface CategoryPageProps {
+  params: { slug: string };
+}
+
+// Page component
+export default async function CategoryPage({ params }: CategoryPageProps) {
+  if (!params?.slug) return notFound();
+
   const products = await getProductsByCategory(params.slug);
 
-  // If no products are found, show a 404 page
   if (!products.length) return notFound();
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold text-[#2A254B] capitalize">
-        {params.slug}
-      </h1>
+      <h1 className="text-2xl font-bold text-[#2A254B] capitalize">{params.slug}</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-4">
         {products.map((product) => (
           <div key={product._id} className="border p-4 rounded-md shadow-md">
