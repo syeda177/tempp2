@@ -38,14 +38,12 @@ async function getProductsByCategory(slug: string): Promise<ProductType[]> {
   return products;
 }
 
-// Define the correct type for the page props
-type Props = {
-  params: { slug: string };
-  searchParams: { [key: string]: string | string[] | undefined };
-}
-
-// Page component
-export default async function CategoryPage({ params }: Props) {
+// Page component using Next.js 15 props type
+export default async function CategoryPage({
+  params,
+}: {
+  params: { slug: string }
+}) {
   if (!params?.slug) return notFound();
 
   const products = await getProductsByCategory(params.slug);
